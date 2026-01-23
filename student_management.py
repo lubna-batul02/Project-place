@@ -1,21 +1,23 @@
 students=[]
+
 def load_details():
+    global students
+    students=[]
     try:
-        with open("stud_file","r") as file:
+        with open("stud_file.txt","r") as file:
             for line in file:
                 line=line.strip()
                 if not line:
                     continue
                 parts=line.strip().split(",")
-                students={}
+                student={}
                 for part in parts:
                     if not part:
                         continue 
                     key,value=part.split(":",1)
                     key,value=key.strip(),value.strip()
-                    if key == "Student_id":
-                        value = int(value)
-                        student["student_id"] = value
+                    if key == "ID":
+                        student["student_id"] = int(value)
                     elif key == "Age":
                         value = int(value)
                         student["Age"] = value
@@ -37,19 +39,20 @@ def store_details():
                 f"Name: {student['Name']},"
                 f"ID: {student['student_id']},"
                 f"Age: {student['Age']},"
-                f"Course: {student['Course']},")
+                f"Course: {student['Course']} \n")
     print("All student details saved to 'stud_file.txt'")
 
 
 
 def show_menu():
-    print("____Student Management System____")
-    print("1. Add Student")
-    print("2. View All Student")
-    print("3. Search Student")
-    print("4. Update Student")
-    print("5. Delete Student")
-    print("6. Exit")
+    print("Student Management System")
+
+    print("Choice 1: Add Student")
+    print("Choice 2: View All Student")
+    print("Choice 3: Search Student")
+    print("Choice 4: Update Student")
+    print("Choice 5: Delete Student")
+    print("Choice 6: Exit")
 
 
 def add_stud_details():
@@ -65,7 +68,7 @@ def add_stud_details():
     while True:
         try:
             student_id=int(input("Enter student ID: "))
-            if any(s["ID"]==student_id for s in students):
+            if any(s["student_id"]==student_id for s in students):
                 print("ID already exist. Enter new")
             else:
                 break
@@ -92,15 +95,16 @@ def add_stud_details():
             "Course":course
     }
     students.append(student_data)
-    return student_data
+    store_details()
+    print(f"Student '{Name}' added successfully!")
     
 
-
-
+    
 
 def stud_view():
     if len(students)==0:
         print("No Students found!")
+        return
     else:
         print("Student list")
         for student in students:
@@ -112,28 +116,34 @@ def stud_view():
 
 
 def search_id():
-    search_id=int(input("enter student id"))
-    for student in students:
-        if student["student_id"] ==search_id:
-            print(f"ID: {student['student_id']}")
-            print(f"Name: {student['Name']}")
-            print(f"Age: {student['Age']}")
-            print(f"Course: {student['Course']}")
-            print("_____________")
-            return
+    try:
+        search_id = int(input("enter student id: "))
+        for student in students:
+            if student["student_id"] ==search_id:
+                print(f"ID: {student['student_id']}")
+                print(f"Name: {student['Name']}")
+                print(f"Age: {student['Age']}")
+                print(f"Course: {student['Course']}")
+                print("_____________")
+                return
         else:
-            print("ID not found!")
+            print("Not found")
+    except:
+        print("Invalid ID")
+            
 
 
 def update_stud():
-    if len(students) ==0:
+    if len(students) == 0:
         print("No students to update!")
         return
+
     try:
-        update_id=int(input("enter the id to update data:"))
+        update_id = int(input("Enter the ID to update data: "))
+        
         for student in students:
-            if student["student_id"] ==update_id:
-                name=input("Enter new name")
+            if student["student_id"] == update_id:
+                name=input("Enter new name:")
                 age=int(input("Enter New age:"))
                 course=input("Enter new course  (BCA/BSC/BCOM/BA/MCA): ")
                 if name:
@@ -142,57 +152,64 @@ def update_stud():
                     student["Age"]=int(age)
                 if course:
                     if course in ["BCA", "BSC", "BCOM", "BA", "MCA"]:
-                        student["course"]=course
-                else:
-                    print("Invalid course, skipping course update.")
-            store_details()
-            print("Student updated successfully!")
-            return
-        print("Student noot found!")
+                        student["Course"]=course
+                store_details()
+                print("Student updated successfully!")
+                return
+
+        print("Student not found!")
+
     except ValueError:
         print("Invalid input")
 
 
 def delete_stud():
+    global students
     try:
-        delete_id=int(input("enter student ID to delete:"))
+        load_details() 
+        delete_id = int(input("Enter student ID to delete: "))
+
         for student in students:
-            if delete_id==student["student_id"]:
+            if delete_id == student["student_id"]:
                 students.remove(student)
-                print("Successfully removed Student details")
+                store_details()
+                print("Successfully removed student details")
                 return
-            else:
-                ("Student Details is not added yet!")
+
+        
+        print("No data found!")
+
     except ValueError:
         print("Invalid ID")
+
 load_details() 
+
 while True:
     show_menu()
     try:
         choice=int(input("Enter your choice: "))
-
-        if choice == 1:
-            student=add_stud_details()
-            (f" Student '{student['Name']}' added successfully!")
-            stud_view()        
-            store_details()
-        elif choice==2:
-            stud_view()
-        elif choice==3:
-            search_id()
-        elif choice ==4:
-            update_stud()
-        elif choice == 5:
-            delete_stud()
-        elif choice ==6:
-            print(" Exiting program...")
-            break
-        else:
-            print("Invalid choice")
-
     except ValueError:
-        print(" Enter numbers only")
+        print("Please enter a valid number.")
         continue
+    if choice == 1:
+        student=add_stud_details()
+        print(f" Student added successfully!")
+        stud_view()        
+        store_details()
+    elif choice==2:
+        stud_view()
+    elif choice==3:
+        search_id()
+    elif choice ==4:
+        update_stud()
+    elif choice == 5:
+        delete_stud()
+    elif choice ==6:
+        print(" Exiting program...")
+        break
+    else:
+        print("Invalid choice")
+
 
 
 
