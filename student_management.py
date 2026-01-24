@@ -2,7 +2,7 @@ students=[]
 
 def load_details():
     global students
-    students=[]
+    students.clear() 
     try:
         with open("stud_file.txt","r") as file:
             for line in file:
@@ -53,6 +53,8 @@ def show_menu():
     print("Choice 4: Update Student")
     print("Choice 5: Delete Student")
     print("Choice 6: Exit")
+    print("Choice 7: Delete all")
+
 
 
 def add_stud_details():
@@ -95,7 +97,6 @@ def add_stud_details():
             "Course":course
     }
     students.append(student_data)
-    store_details()
     print(f"Student '{Name}' added successfully!")
     
 
@@ -165,8 +166,8 @@ def update_stud():
 
 def delete_stud():
     global students
+    load_details()
     try:
-        load_details() 
         delete_id = int(input("Enter student ID to delete: "))
 
         for student in students:
@@ -181,6 +182,8 @@ def delete_stud():
 
     except ValueError:
         print("Invalid ID")
+ 
+
 
 load_details() 
 
@@ -193,8 +196,7 @@ while True:
         continue
     if choice == 1:
         student=add_stud_details()
-        print(f" Student added successfully!")
-        stud_view()        
+        print(f" Student added successfully!")       
         store_details()
     elif choice==2:
         stud_view()
